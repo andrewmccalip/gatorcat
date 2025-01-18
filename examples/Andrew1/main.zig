@@ -89,13 +89,10 @@ pub fn main() !void {
         }
         if (blink_timer.read() > std.time.ns_per_s * 0.1) {
             blink_timer.reset();
-            // make the lights flash on the EL2008
-            el2008.runtime_info.pi.outputs[0] *%= 2;
-            if (el2008.runtime_info.pi.outputs[0] == 0) {
-                el2008.runtime_info.pi.outputs[0] = 1;
-            }
+            // Toggle only the first bit
+            el2008.runtime_info.pi.outputs[0] ^= 1;
         }
-        if (kill_timer.read() > std.time.ns_per_s * 10) {
+        if (kill_timer.read() > std.time.ns_per_s * 60) {
             kill_timer.reset();
             try ek1100.setALState(&port, .SAFEOP, 10000, 10000);
         }
