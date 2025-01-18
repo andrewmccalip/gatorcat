@@ -11,6 +11,10 @@
             .url = "https://npcap.com/dist/npcap-sdk-1.13.zip",
             .hash = "12206001b370bb70f9dc47c846df6ad82725e4491650472dc7037c5e027792ba207e",
         },
+        .gatorcat = .{
+            .url = "git+https://github.com/kj4tmp/gatorcat#569170f0f2585e8fa7420618e1529af36f6c022e",
+            .hash = "1220eff3260c66ebf4213d5a6578c18d36a166f8b763f1e89a0925fc1af21b078096",
+        },
     },
     .paths = .{
         "build.zig",

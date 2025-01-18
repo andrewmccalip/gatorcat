@@ -142,4 +142,47 @@ pub fn build(b: *std.Build) void {
     all_step.dependOn(sim_test_step);
 
     b.default_step.dependOn(cli_step);
+
+    // andrew1 example
+    const andrew1 = b.addExecutable(.{
+        .name = "Andrew1",
+        .root_source_file = b.path("examples/Andrew1/main.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    andrew1.root_module.addImport("gatorcat", lib);
+
+    // Add Windows-specific configuration
+    if (target.result.os.tag == .windows) {
+        andrew1.linkLibC();
+        const maybe_npcap_sdk = b.lazyDependency("npcap_sdk", .{
+            .target = target,
+            .optimize = optimize,
+        });
+        if (maybe_npcap_sdk) |npcap_sdk| {
+            andrew1.addIncludePath(npcap_sdk.path("Include"));
+
+            switch (target.result.cpu.arch) {
+                .x86 => {
+                    andrew1.addObjectFile(npcap_sdk.path("Lib/wpcap.lib"));
+                    andrew1.addObjectFile(npcap_sdk.path("Lib/Packet.lib"));
+                },
+                .x86_64 => {
+                    andrew1.addObjectFile(npcap_sdk.path("Lib/x64/wpcap.lib"));
+                    andrew1.addObjectFile(npcap_sdk.path("Lib/x64/Packet.lib"));
+                },
+                .aarch64 => {
+                    andrew1.addObjectFile(npcap_sdk.path("Lib/ARM64/wpcap.lib"));
+                    andrew1.addObjectFile(npcap_sdk.path("Lib/ARM64/Packet.lib"));
+                },
+                else => {},
+            }
+        }
+    }
+
+    // Add to default install step
+    b.installArtifact(andrew1);
+
+    // Add to examples step
+    examples_step.dependOn(&b.addInstallArtifact(andrew1, .{}).step);
 }
