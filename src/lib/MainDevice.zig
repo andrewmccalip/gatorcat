@@ -361,8 +361,6 @@ pub const SendRecvCycleFramesDiagError = error{
     CurruptedFrame,
     NoTransactionAvailable,
     RecvTimeout,
-    /// TODO: can we get rid of this???
-    NoTransactions,
 };
 
 /// returns number of frames required to exchange process data
@@ -554,6 +552,7 @@ pub fn continueAllTransactionsRecvCyclicFrames(self: *MainDevice) SendRecvCycleF
                 error.Overflow => unreachable,
             };
         }
+        if (self.transactions.len == 0) break :recv;
     } else {
         return error.RecvTimeout;
     }
