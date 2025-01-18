@@ -13,7 +13,7 @@ pub const std_options: std.Options = .{
 pub fn main() !void {
     var raw_socket = switch (builtin.target.os.tag) {
         .linux => try gcat.nic.RawSocket.init("enx00e04c68191a"),
-        .windows => try gcat.nic.WindowsRawSocket.init("\\Device\\NPF_{5D3366DB-CB37-4C95-93EA-AB2EBF3F9FAA}"),
+        .windows => try gcat.nic.WindowsRawSocket.init("\\Device\\NPF_{FD6FB7B9-BB54-438B-8178-07EEAFAC6294}"),
         else => @compileError("unsupported target os"),
     };
     defer raw_socket.deinit();
@@ -27,7 +27,7 @@ pub fn main() !void {
     var md = try gcat.MainDevice.init(
         stack_fba.allocator(),
         &port,
-        .{ .recv_timeout_us = 20000, .eeprom_timeout_us = 10_000 },
+        .{ .recv_timeout_us = 200000, .eeprom_timeout_us = 100000 },
         eni,
     );
     defer md.deinit(stack_fba.allocator());
