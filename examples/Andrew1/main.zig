@@ -62,7 +62,6 @@ pub fn main() !void {
             error.LinkError,
             error.CurruptedFrame,
             error.NoTransactionAvailable,
-            error.NoTransactions,
             => |err2| return err2,
         };
         if (diag.brd_status_wkc != eni.subdevices.len) return error.TopologyChanged;
@@ -74,15 +73,18 @@ pub fn main() !void {
             wkc_error_timer.reset();
             std.log.err("process data wkc wrong: {}, expected: {}", .{ diag.process_data_wkc, md.expectedProcessDataWkc() });
         }
-        if (diag.process_data_wkc == md.expectedProcessDataWkc()) std.debug.print("SUCCESS!!!!!!!!!!!!!!\n", .{});
+        // if (diag.process_data_wkc == md.expectedProcessDataWkc()) std.debug.print("SUCCESS!!!!!!!!!!!!!!\n", .{});
         cycle_count += 1;
 
         // do application
         if (print_timer.read() > std.time.ns_per_s * 1) {
             print_timer.reset();
-            std.log.warn("frames/s: {}", .{cycle_count});
-            std.log.warn("temps: {}", .{temps});
-            std.debug.print("EL2008 PROCESS IMAGE: {}\n", .{el2008.runtime_info.pi});
+            std.debug.print("frames/s: {}\n", .{cycle_count});
+            std.debug.print("\nTemperature Readings:\n", .{});
+            std.debug.print("  Channel 1: {d:>6.2}\n", .{@as(f32, @floatFromInt(temps.ch1.value)) / 100.0});
+            std.debug.print("  Channel 2: {d:>6.2}\n", .{@as(f32, @floatFromInt(temps.ch2.value)) / 100.0});
+            std.debug.print("  Channel 3: {d:>6.2}\n", .{@as(f32, @floatFromInt(temps.ch3.value)) / 100.0});
+            std.debug.print("  Channel 4: {d:>6.2}\n", .{@as(f32, @floatFromInt(temps.ch4.value)) / 100.0});
             cycle_count = 0;
         }
         if (blink_timer.read() > std.time.ns_per_s * 0.1) {
